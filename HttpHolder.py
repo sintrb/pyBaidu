@@ -58,4 +58,44 @@ def get_html_by_urldoc(doc):
 	return html
 
 
+class HttpHolder:
+	'''
+	Http请求保持类
+	'''
+	def __init__(self):
+		""""""
+		self.cj = cookielib.CookieJar()
+		self.opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.cj))
+	def open(self, url, headers=None, data=None):
+		"""open a url"""
+# 		print "open url: %s"%url
+		if type(data) is types.DictType:
+			data = urlencode(data)
+		
+		hd = {}
+		if headers:
+			for (k, v) in headers.items():
+						hd[k] = v
+		req = urllib2.Request(url, headers=hd)
+		self.doc = self.opener.open(req, data)
+		return self.doc
+	def open_raw(self, url, headers=None, data=None):
+		self.open(url, headers, data)
+		return self.doc.read()
+	
+	def open_html(self, url, headers=None, data=None):
+		return get_html_by_urldoc(self.open(url, headers, data))
+
+	def geturl(self):
+		return self.doc.geturl()
+	
+	def set_cookiesdict(self, cookies):
+		for (k, v) in cookies.items():
+			self.cj.set_cookie(mkcookie(k, v))
+	def set_cookie(self, name, value):
+		self.cj.set_cookie(mkcookie(name, value))
+	
+	def get_cookiesdict(self):
+		return dict(((c.name, c.value) for c in self.cj))
+
 
