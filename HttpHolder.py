@@ -63,12 +63,15 @@ class HttpHolder:
 	Http请求保持类
 	'''
 	def __init__(self):
-		""""""
+		"""
+		创建一个Http请求保存实例
+		"""
 		self.cj = cookielib.CookieJar()
 		self.opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.cj))
 	def open(self, url, headers=None, data=None):
-		"""open a url"""
-# 		print "open url: %s"%url
+		"""
+		发送一个Http请求,返回Http响应对象
+		"""
 		if type(data) is types.DictType:
 			data = urlencode(data)
 		
@@ -80,23 +83,50 @@ class HttpHolder:
 		self.doc = self.opener.open(req, data)
 		return self.doc
 	def open_raw(self, url, headers=None, data=None):
+		'''
+		原始的读取一个Http返回体
+		'''
 		self.open(url, headers, data)
 		return self.doc.read()
 	
 	def open_html(self, url, headers=None, data=None):
+		'''
+		请求一个html文档（其实是请求文本类型）
+		'''
 		return get_html_by_urldoc(self.open(url, headers, data))
 
 	def geturl(self):
+		'''
+		获取当前请求的响应url
+		'''
 		return self.doc.geturl()
 	
 	def set_cookiesdict(self, cookies):
+		'''
+		通过字典设置Cookie
+		'''
 		for (k, v) in cookies.items():
 			self.cj.set_cookie(mkcookie(k, v))
 	def set_cookie(self, name, value):
+		'''
+		设置Cookie
+		'''
 		self.cj.set_cookie(mkcookie(name, value))
 	
 	def get_cookiesdict(self):
+		'''
+		获取Cookie的字典表示
+		'''
 		return dict(((c.name, c.value) for c in self.cj))
 
-
+if __name__ == '__main__':
+	hd = HttpHolder()
+	hd.open_html('http://www.baidu.com/')
+	cks = hd.get_cookiesdict()
+	print cks
+	hd1 = HttpHolder()
+	hd1.set_cookiesdict(cks)
+	hd1.open_html('http://www.baidu.com/')
+	print hd1.get_cookiesdict()
+	
 
