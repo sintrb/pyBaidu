@@ -61,11 +61,13 @@ def get_html_by_urldoc(doc):
 class HttpHolder:
 	'''
 	Http请求保持类
+	headers, 默认的请求头，一般可以把UA之类放这
 	'''
-	def __init__(self):
+	def __init__(self, headers=None):
 		"""
 		创建一个Http请求保存实例
 		"""
+		self.headers = headers
 		self.cj = cookielib.CookieJar()
 		self.opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.cj))
 	def open(self, url, headers=None, data=None):
@@ -75,10 +77,14 @@ class HttpHolder:
 		if type(data) is types.DictType:
 			data = urlencode(data)
 		
-		hd = {}
-		if headers:
-			for (k, v) in headers.items():
-						hd[k] = v
+		if self.headers and headers:
+			hd = dict(self.headers.items()+headers.items())
+		elif self.headers:
+			hd = self.headers
+		elif headers:
+			hd = headers
+		else:
+			hd = None
 		req = urllib2.Request(url, headers=hd)
 		self.doc = self.opener.open(req, data)
 		return self.doc
@@ -128,5 +134,6 @@ if __name__ == '__main__':
 	hd1.set_cookiesdict(cks)
 	hd1.open_html('http://www.baidu.com/')
 	print hd1.get_cookiesdict()
+	
 	
 
