@@ -32,14 +32,14 @@ class BaseBaiduUser():
 		用户登陆
 		'''
 		html = self.http.open_html('http://wappass.baidu.com/passport')
-# 		print self.http.get_cookiesdict()
+ 		print self.http.get_cookiesdict()
 		fhtml = strbetween(html, '<form action="/passport/login" method="post">', '</form>')
 		form = dict(re.findall('<input type="hidden".*name="(.*)"\s*value="(.*)"[\s/]*>', fhtml, re.IGNORECASE | re.MULTILINE))
 		form['username'] = self.username
 		form['password'] = self.password
 		form['submit'] = '{U'
 		print form['vcodestr']
-# 		print form
+ 		print form
 		html = self.http.open_html('http://wappass.baidu.com/passport/login', headers={'Referer': 'http://wappass.baidu.com/passport?login'}, data=form)
 		fhtml = strbetween(html, '/passport/login', '</form>')
 		form = dict(re.findall('<input type="hidden".*name="(.*)"\s*value="(.*)"[\s/]*>', fhtml, re.IGNORECASE | re.MULTILINE))
