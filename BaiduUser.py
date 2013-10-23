@@ -6,8 +6,17 @@ Created on 2013-10-14
 '''
 
 import re
-
+import config
 from HttpHolder import HttpHolder
+
+
+import sys
+try:
+	sys.setdefaultencoding("utf-8")
+except:
+	pass
+
+
 
 def strbetween(s, ss, es):
 	si = s.index(ss)
@@ -36,14 +45,14 @@ class BaseBaiduUser():
 		form = dict(re.findall('<input type="hidden".*name="(.*)"\s*value="(.*)"[\s/]*>', fhtml, re.IGNORECASE | re.MULTILINE))
 		form['username'] = self.username
 		form['password'] = self.password
-		form['submit'] = '{U'
+		form['submit'] = '登录'
 		html = self.http.open_html('http://wappass.baidu.com/passport/login', headers={'Referer': 'http://wappass.baidu.com/passport?login'}, data=form)
-		fhtml = strbetween(html, '/passport/login', '</form>')
-		form = dict(re.findall('<input type="hidden".*name="(.*)"\s*value="(.*)"[\s/]*>', fhtml, re.IGNORECASE | re.MULTILINE))
-		print form['vcodestr']
+		checkstr = '%s'%self.username
+		html = self.http.open_html('http://tieba.baidu.com/')
+		return html.find(self.username)>=0
 		
 if __name__ == '__main__':
-	bdu = BaseBaiduUser('username', 'password')
+	bdu = BaseBaiduUser(config.username, config.password)
 	print bdu.login()
 	
 
